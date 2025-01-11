@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Uncle's Day</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: black;
+            overflow: hidden;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            position: absolute;
+            width: 100%;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 10;
+        }
+
+        h1 {
+            color: white;
+            font-size: 3em;
+            text-shadow: 0 0 20px red, 0 0 40px yellow;
+            opacity: 1;
+            transition: opacity 5s ease-in-out;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="message">Happy Uncle’s Day 🎉</h1>
+    </div>
+    <canvas id="fireworksCanvas"></canvas>
+
+    <script>
+        // بعد از ۵ ثانیه متن اول محو می‌شود
+        setTimeout(() => {
+            document.getElementById("message").style.opacity = "0";
+        }, 5000);
+
+        // بعد از ۱۰ ثانیه متن جدید ظاهر می‌شود
+        setTimeout(() => {
+            let messageElement = document.getElementById("message");
+            messageElement.innerText = "I Love You Uncle ❤";
+            messageElement.style.opacity = "1";
+        }, 10000);
+
+        // تنظیمات اولیه برای آتش‌بازی
+        const canvas = document.getElementById("fireworksCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Firework {
+            constructor(x, y, color, speed, size) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.speedX = (Math.random() - 0.5) * speed;
+                this.speedY = (Math.random() - 0.5) * speed;
+                this.size = size;
+                this.opacity = 1;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.opacity -= 0.02;
+            }
+
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        let fireworks = [];
+
+        function createFirework() {
+            let x = Math.random() * canvas.width;
+            let y = Math.random() * canvas.height / 2;
+            let colors = ["red", "blue", "yellow", "green", "purple", "orange"];
+            let color = colors[Math.floor(Math.random() * colors.length)];
+
+            for (let i = 0; i < 30; i++) {
+                fireworks.push(new Firework(x, y, color, Math.random() * 5 + 2, Math.random() * 4 + 1));
+            }
+        }
+
+        function animate() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            fireworks.forEach((firework, index) => {
+                firework.update();
+                firework.draw();
+
+                if (firework.opacity <= 0) {
+                    fireworks.splice(index, 1);
+                }
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        setInterval(createFirework, 500);
+        animate();
+    </script>
+</body>
+</html>
